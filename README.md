@@ -7,7 +7,7 @@ This is a plug-in repository of kicad, which needs kicad version above 5.99.0
 Clone the repository to the plug-in directory of kicad
 
 ```bash
-git clone 
+git clone https://github.com/beanjs-kicad/beantools.git
 ```
 
 ## teardrops
