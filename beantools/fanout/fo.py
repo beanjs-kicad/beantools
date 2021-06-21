@@ -14,10 +14,12 @@ def BGAFanout(info,pads):
 
         startPos=pad.GetPosition()
 
-        if startPos.x == info.leftTop.x or startPos.y == info.leftTop.y:
+        if startPos.x == info.leftTop.x or startPos.y == info.leftTop.y or \
+           startPos.x == info.leftTop.x+info.spacing or startPos.y == info.leftTop.y+info.spacing :
             continue
         
-        if startPos.x == info.rightBottom.x or startPos.y == info.rightBottom.y:
+        if startPos.x == info.rightBottom.x or startPos.y == info.rightBottom.y or \
+            startPos.x == info.rightBottom.x-info.spacing or startPos.y == info.rightBottom.y-info.spacing :
             continue
         
         vecDir=wxPoint(startPos.x-info.center.x,startPos.y-info.center.y)

@@ -15,3 +15,6 @@ git clone https://github.com/beanjs-kicad/beantools.git
 > Improve from https://github.com/NilujePerchut/kicad_scripts
 
 ## bga fanout
+
+skip outer:2
+
