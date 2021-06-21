@@ -13,3 +13,5 @@ git clone https://github.com/beanjs-kicad/beantools.git
 ## teardrops
 
 > Improve from https://github.com/NilujePerchut/kicad_scripts
+
+## bga fanout
