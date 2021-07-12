@@ -97,7 +97,7 @@ def __Zone(board, points, track):
     # Add zone properties
     z.SetLayer(track.GetLayer())
     z.SetNetCode(track.GetNetCode())
-    # z.SetLocalClearance(track.GetLocalClearance(""))
+    z.SetLocalClearance(track.GetLocalClearance(track.GetClass()))
     z.SetMinThickness(25400)  # The minimum
     z.SetPadConnection(2)  # 2 -> solid
     z.SetIsFilled(True)
