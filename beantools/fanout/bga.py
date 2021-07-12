@@ -1,3 +1,4 @@
+import math
 from pcbnew import PAD_SHAPE_CIRCLE
 from pcbnew import wxPoint
 from functools import reduce
@@ -9,15 +10,25 @@ class BGAInfo:
     center=wxPoint(0,0)
     leftTop=wxPoint(0,0)
     rightBottom=wxPoint(0,0)
+    degrees=0
 
 def detectSpacing(pads):
-    firstPad=pads[0]
-    pads=pads[1:]
+    minDist = 10000000000000
 
-    minDist = 100000000000
-    for pad in pads:
-        if firstPad.GetPosition().x != pad.GetPosition().x:
-            minDist = min(minDist, abs(firstPad.GetPosition().x - pad.GetPosition().x))
+    for idx in range(len(pads)):
+        firstPos=pads[idx].GetPosition()
+        rpads=pads[idx:]
+
+        for pad in rpads:
+            padPos=pad.GetPosition()
+
+            if firstPos.x != padPos.x :
+                x=abs(firstPos.x - padPos.x)
+                y=abs(firstPos.y - padPos.y)
+
+                dist=math.sqrt(x*x+y*y)
+                minDist = min(minDist, dist)
+
     return minDist
 
 def IsBGA(pads):
@@ -27,8 +38,9 @@ def IsBGA(pads):
     
     return True
 
-def ParseBGAInfo(pads):
+def ParseBGAInfo(ft):
     info = BGAInfo()
+    pads=ft.Pads()
 
     minx = reduce(lambda x, y: min(x, y), map(lambda x: x.GetPosition().x, pads))
     maxx = reduce(lambda x, y: max(x, y), map(lambda x: x.GetPosition().x, pads))
@@ -41,6 +53,7 @@ def ParseBGAInfo(pads):
     info.leftTop = wxPoint(minx, miny)
     info.rightBottom=wxPoint(maxx,maxy)
     info.center = wxPoint(maxx* 0.5 + minx* 0.5, maxy * 0.5 + miny* 0.5)
+    info.degrees=ft.GetOrientationDegrees()
 
     info.rows=int(1+round((maxy-miny)/float(info.spacing)))
     info.columns=int(1+round((maxx-minx)/float(info.spacing)))

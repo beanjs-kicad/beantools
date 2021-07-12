@@ -1,6 +1,8 @@
-from math import inf
+import math
+import wx
+
 from pcbnew import PCB_TRACK,PCB_VIA,wxPoint
-from pcbnew import GetBoard
+from pcbnew import GetBoard,EDA_UNITS_DEGREES
 
 def BGAFanout(info,pads):
     board=GetBoard()
@@ -22,17 +24,23 @@ def BGAFanout(info,pads):
             startPos.x == info.rightBottom.x-info.spacing or startPos.y == info.rightBottom.y-info.spacing :
             continue
         
-        vecDir=wxPoint(startPos.x-info.center.x,startPos.y-info.center.y)
-        if vecDir.x == 0:
-            vecDir.x=1
+        vectorX=startPos.x-info.center.x
+        vectorY=startPos.y-info.center.y
+
+        if vectorX == 0:
+            vectorX=1
         
-        if vecDir.y == 0:
-            vecDir.y=1
+        if vectorY == 0:
+            vectorY=1
 
-        vecDir.x=int(vecDir.x/abs(vecDir.x))
-        vecDir.y=int(vecDir.y/abs(vecDir.y))
+        vectorX=vectorX/abs(vectorX)
+        vectorY=vectorY/abs(vectorY)
+        # print(f"vectorX:{vectorX} vectorY:{vectorY}")
+        
+        newX = vectorX * math.cos(2 * math.pi * info.degrees/360)- vectorY * math.sin(2 * math.pi * info.degrees/360)
+        newY = vectorX * math.sin(2 * math.pi * info.degrees/360)+ vectorY * math.cos(2 * math.pi * info.degrees/360)
 
-        endPos=wxPoint(startPos.x+int(offset*vecDir.x),startPos.y+int(offset*vecDir.y))
+        endPos=wxPoint(startPos.x+round(newX*offset),startPos.y+round(newY*offset))
 
 
         newTrack=PCB_TRACK(board)
@@ -41,15 +49,19 @@ def BGAFanout(info,pads):
         newTrack.SetNet(pad.GetNet())
         newTrack.SetLayer(pad.GetLayer())
         newTrack.SetWidth(traceWidth)
+        # newTrack.Rotate(startPos,math.sin(2 * math.pi * info.degrees/360))
+        
         board.Add(newTrack)
-
+        
         newVia=PCB_VIA(board)
-        newVia.SetPosition(endPos)
+        newVia.SetPosition(newTrack.GetEnd())
         newVia.SetNet(pad.GetNet())
         newVia.SetDrill(viaDrill)
         newVia.SetWidth(viaSize)
-        board.Add(newVia)
 
+        board.Add(newVia)
+        
+        # break
     
     pass
 

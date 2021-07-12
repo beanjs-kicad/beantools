@@ -29,7 +29,7 @@ class FanoutPlugin(ActionPlugin):
             return
         
         
-        info=ParseBGAInfo(pads)
+        info=ParseBGAInfo(selItem)
         BGAFanout(info,pads)
 
         wx.MessageBox(f"fanout finished")
