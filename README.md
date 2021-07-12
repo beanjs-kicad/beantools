@@ -18,7 +18,9 @@ git clone https://github.com/beanjs-kicad/beantools.git
 
 skip outer:2
 
-## routed length
+## length stats
+
+> Improve from https://github.com/MitjaNemec/Kicad_action_plugins
 
 
 
