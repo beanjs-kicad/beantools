@@ -29,10 +29,10 @@ def __GetAllVias(board):
     vias = []
     vias_selected = []
     for item in board.GetTracks():
-        if type(item) == PCB_VIA:
+        if item.GetClass() == 'PCB_VIA':
             pos = item.GetPosition()
             width = item.GetWidth()
-            drill = item.GetDrillValue()
+            drill = PCB_VIA(item).GetDrillValue()
             layer = -1
             vias.append((pos, width, drill, layer))
             if item.IsSelected():
@@ -82,7 +82,7 @@ def __GetAllTeardrops(board):
 def __DoesTeardropBelongTo(teardrop, track, via):
     """Return True if the teardrop covers given track AND via"""
     # First test if the via belongs to the teardrop
-    if not teardrop.HitTestInsideZone(via[0]):
+    if not teardrop.HitTest(via[0]):
         return False
     # In a second time, test if the track belongs to the teardrop
     if not track.HitTest(teardrop.GetBoundingBox().GetCenter()):
