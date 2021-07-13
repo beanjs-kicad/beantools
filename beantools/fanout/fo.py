@@ -1,8 +1,26 @@
 import math
-import wx
+import re
 
 from pcbnew import PCB_TRACK,PCB_VIA,wxPoint
-from pcbnew import GetBoard,EDA_UNITS_DEGREES
+from pcbnew import GetBoard
+
+def degreesToAngle(degrees):
+    return 2 * math.pi * degrees/360
+
+def isSkip(info,pad):
+    padName = pad.GetPadName()
+
+    pinName=re.match("[A-Z]+",padName).group()
+    pinNumb=int(padName.replace(pinName,''))
+
+    if pinName in info.skipEdges:
+        return True
+    
+    if pinNumb in info.skipEdges:
+        return True
+    
+    return False
+
 
 def BGAFanout(info,pads):
     board=GetBoard()
@@ -13,34 +31,37 @@ def BGAFanout(info,pads):
     
     for pad in pads:
         offset=info.spacing/2
+        angle=degreesToAngle(90-info.degrees)
 
         startPos=pad.GetPosition()
 
-        if startPos.x == info.leftTop.x or startPos.y == info.leftTop.y or \
-           startPos.x == info.leftTop.x+info.spacing or startPos.y == info.leftTop.y+info.spacing :
+        if isSkip(info,pad):
             continue
-        
-        if startPos.x == info.rightBottom.x or startPos.y == info.rightBottom.y or \
-            startPos.x == info.rightBottom.x-info.spacing or startPos.y == info.rightBottom.y-info.spacing :
-            continue
-        
-        vectorX=startPos.x-info.center.x
-        vectorY=startPos.y-info.center.y
 
-        if vectorX == 0:
-            vectorX=1
+        # if startPos.x == info.leftTop.x or startPos.y == info.leftTop.y or \
+        #    startPos.x == info.leftTop.x+info.spacing or startPos.y == info.leftTop.y+info.spacing :
+        #     continue
         
-        if vectorY == 0:
-            vectorY=1
-
-        vectorX=vectorX/abs(vectorX)
-        vectorY=vectorY/abs(vectorY)
-        # print(f"vectorX:{vectorX} vectorY:{vectorY}")
+        # if startPos.x == info.rightBottom.x or startPos.y == info.rightBottom.y or \
+        #     startPos.x == info.rightBottom.x-info.spacing or startPos.y == info.rightBottom.y-info.spacing :
+        #     continue
         
-        newX = vectorX * math.cos(2 * math.pi * info.degrees/360)- vectorY * math.sin(2 * math.pi * info.degrees/360)
-        newY = vectorX * math.sin(2 * math.pi * info.degrees/360)+ vectorY * math.cos(2 * math.pi * info.degrees/360)
+        unitVectorX=startPos.x-info.center.x
+        unitVectorY=startPos.y-info.center.y
 
-        endPos=wxPoint(startPos.x+round(newX*offset),startPos.y+round(newY*offset))
+        if unitVectorX == 0:
+            unitVectorX=1
+        
+        if unitVectorY == 0:
+            unitVectorY=1
+
+        unitVectorX=unitVectorX/abs(unitVectorX)
+        unitVectorY=unitVectorY/abs(unitVectorY)
+        
+        vectorX = unitVectorX * math.cos(angle) - unitVectorY * math.sin(angle)
+        vectorY = unitVectorX * math.sin(angle) + unitVectorY * math.cos(angle)
+
+        endPos=wxPoint(startPos.x+round(vectorX*offset),startPos.y+round(vectorY*offset))
 
 
         newTrack=PCB_TRACK(board)
@@ -49,7 +70,6 @@ def BGAFanout(info,pads):
         newTrack.SetNet(pad.GetNet())
         newTrack.SetLayer(pad.GetLayer())
         newTrack.SetWidth(traceWidth)
-        # newTrack.Rotate(startPos,math.sin(2 * math.pi * info.degrees/360))
         
         board.Add(newTrack)
         

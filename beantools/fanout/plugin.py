@@ -2,7 +2,7 @@ import wx
 
 
 from os import path
-from pcbnew import ActionPlugin, GetBoard
+from pcbnew import ActionPlugin, GetBoard,Refresh
 from .bga import IsBGA,ParseBGAInfo
 from .fo import BGAFanout
 
@@ -32,6 +32,7 @@ class FanoutPlugin(ActionPlugin):
         info=ParseBGAInfo(selItem)
         BGAFanout(info,pads)
 
+        Refresh()
         wx.MessageBox(f"fanout finished")
 
     def getSelectedFootprint(self):

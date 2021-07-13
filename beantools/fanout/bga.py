@@ -1,16 +1,14 @@
 import math
+import re
 from pcbnew import PAD_SHAPE_CIRCLE
 from pcbnew import wxPoint
-from functools import reduce
+from functools import reduce,cmp_to_key
 
 class BGAInfo:
     spacing=0.0
-    rows=0
-    columns=0
     center=wxPoint(0,0)
-    leftTop=wxPoint(0,0)
-    rightBottom=wxPoint(0,0)
     degrees=0
+    skipEdges=[]
 
 def detectSpacing(pads):
     minDist = 10000000000000
@@ -31,6 +29,15 @@ def detectSpacing(pads):
 
     return minDist
 
+def cmpPinName(a,b):
+    aLen=len(a)
+    bLen=len(b)
+
+    if aLen != bLen:
+        return aLen-bLen
+    
+    return a>b
+
 def IsBGA(pads):
     for pad in pads:
         if pad.GetShape() != PAD_SHAPE_CIRCLE:
@@ -47,15 +54,32 @@ def ParseBGAInfo(ft):
     miny = reduce(lambda x, y: min(x, y), map(lambda x: x.GetPosition().y, pads))
     maxy = reduce(lambda x, y: max(x, y), map(lambda x: x.GetPosition().y, pads))
 
-
     info.spacing=detectSpacing(pads)
-
-    info.leftTop = wxPoint(minx, miny)
-    info.rightBottom=wxPoint(maxx,maxy)
     info.center = wxPoint(maxx* 0.5 + minx* 0.5, maxy * 0.5 + miny* 0.5)
     info.degrees=ft.GetOrientationDegrees()
 
-    info.rows=int(1+round((maxy-miny)/float(info.spacing)))
-    info.columns=int(1+round((maxx-minx)/float(info.spacing)))
+    # for pad in pads:
+    #     print(f"name:{pad.GetPadName()}")
+
+    padNames=map(lambda pad: pad.GetPadName() ,pads)
+    
+    pinNames=[]
+    pinNumbs=[]
+
+    for padName in padNames:
+        pinName=re.match("[A-Z]+",padName).group()
+        pinNumb=int(padName.replace(pinName,''))
+
+        if not pinName in pinNames:
+            pinNames.append(pinName)
+        
+        if not pinNumb in pinNumbs:
+            pinNumbs.append(pinNumb)
+
+    pinNames.sort(key=cmp_to_key(cmpPinName))
+    pinNumbs.sort()
+
+    info.skipEdges += pinNames[:2]+pinNames[-2:]
+    info.skipEdges += pinNumbs[:2]+pinNumbs[-2:]
 
     return info
