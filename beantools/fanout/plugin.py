@@ -12,7 +12,7 @@ class FanoutPlugin(ActionPlugin):
         self.name = "Fanout"
         self.category = "Modify PCB"
         self.description = "Fanout pins withs BGA footprint"
-        self.icon_file_name = path.join(path.dirname(__file__), 'icon.png')
+        self.icon_file_name = path.join(path.dirname(__file__), 'method-draw-image.png')
         self.show_toolbar_button = True
 
     def Run(self):
