@@ -28,8 +28,8 @@ skip outer:2
 
 ## align_ref
 
-F.Silk->User.1
-B.Silk->User.2
+- F.Silk->User.1
+- B.Silk->User.2
 
 
 

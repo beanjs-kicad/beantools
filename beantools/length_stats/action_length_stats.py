@@ -134,6 +134,20 @@ class LengthStatsDialog(length_stats_GUI.LengthStatsGUI):
         self.logger.info("Refreshing net lengths")
         start_time = timeit.default_timer()
 
+        user_units=pcbnew.GetUserUnits()       
+        user_uconv=pcbnew.ToMM
+        user_utext="mm"
+        
+        if user_units == pcbnew.EDA_UNITS_MILS:
+            user_utext = 'mils'
+            user_uconv = pcbnew.ToMils
+        elif user_units == pcbnew.EDA_UNITS_INCHES:
+            user_utext = 'in'
+            user_uconv = lambda x:pcbnew.ToMils(x)/1000
+        else:
+            # pcbnew.EDA_UNITS_MILLIMETRES
+            pass
+
         # go through all the nets
         for net in self.nets:
             # get tracks on net
@@ -144,11 +158,10 @@ class LengthStatsDialog(length_stats_GUI.LengthStatsGUI):
             length = 0
             for t in tracks_on_net:
                 length = length + t.GetLength() #/SCALE
-
-            milsLength=pcbnew.ToMils(length)
+                
             index_net = self.nets.index(net)
-            self.net_data[index_net] = (net, milsLength)
-            self.net_list.SetStringItem(index_net, 1, "%.2f mils" % milsLength)
+            self.net_data[index_net] = (net, length)
+            self.net_list.SetStringItem(index_net, 1, "%.2f %s" % (user_uconv(length),user_utext))
 
         stop_time = timeit.default_timer()
         delta_time = stop_time - start_time
