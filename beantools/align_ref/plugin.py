@@ -36,6 +36,7 @@ class AlignRefPlugin(ActionPlugin):
             ref.SetTextThickness(designSettings.GetTextThickness(layerId))
             ref.SetTextWidth(textSize.GetWidth())
             ref.SetTextHeight(textSize.GetHeight())
+            ref.SetTextAngle(0)
 
 
             fpBoundingBox=self.footprintBoundingBox(fp)
