@@ -23,8 +23,9 @@ class AlignRefPlugin(ActionPlugin):
             ref=fp.Reference()
             layerId=ref.GetLayer()
 
-            if layerId==pcbnew.User_1 or layerId==pcbnew.User_2:
-                continue
+            designLayerId = pcbnew.F_SilkS
+            if layerId == pcbnew.B_SilkS or layerId == pcbnew.User_2:
+                designLayerId = pcbnew.B_SilkS
 
             if layerId == pcbnew.F_SilkS:
                 ref.SetLayer(pcbnew.User_1)
@@ -32,8 +33,8 @@ class AlignRefPlugin(ActionPlugin):
             if layerId == pcbnew.B_SilkS:
                 ref.SetLayer(pcbnew.User_2)
 
-            textSize=designSettings.GetTextSize(layerId)
-            ref.SetTextThickness(designSettings.GetTextThickness(layerId))
+            textSize=designSettings.GetTextSize(designLayerId)
+            ref.SetTextThickness(designSettings.GetTextThickness(designLayerId))
             ref.SetTextWidth(textSize.GetWidth())
             ref.SetTextHeight(textSize.GetHeight())
             ref.SetTextAngle(0)
