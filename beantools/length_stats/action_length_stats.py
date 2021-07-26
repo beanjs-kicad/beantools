@@ -347,7 +347,7 @@ class LengthStats(pcbnew.ActionPlugin):
         pads=board.GetPads()
         nets.update([pad.GetNetname() for pad in pads if pad.IsSelected()])
 
-        wx.MessageBox(f"track nets :{len(nets)}")
+        # wx.MessageBox(f"track nets :{len(nets)}")
         dlg = LengthStatsDialog(None, board, list(nets), logger)
         dlg.Show()
 
