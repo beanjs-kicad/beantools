@@ -20,20 +20,32 @@ class AlignRefPlugin(ActionPlugin):
         designSettings=board.GetDesignSettings()
 
         for fp in footprints:
+            fpLayerId=fp.GetLayer()
+
             ref=fp.Reference()
-            layerId=ref.GetLayer()
+            # layerId=ref.GetLayer()
 
-            designLayerId = pcbnew.F_SilkS
-            if layerId == pcbnew.B_SilkS or layerId == pcbnew.User_2:
+            if fpLayerId == pcbnew.F_Cu:
+                designLayerId = pcbnew.F_SilkS
+                refLayerId = pcbnew.User_1
+            elif fpLayerId == pcbnew.B_Cu:
                 designLayerId = pcbnew.B_SilkS
+                refLayerId = pcbnew.User_2
 
-            if layerId == pcbnew.F_SilkS:
-                ref.SetLayer(pcbnew.User_1)
+
+            # designLayerId = pcbnew.F_SilkS
+            # if layerId == pcbnew.B_SilkS or layerId == pcbnew.User_2:
+            #     designLayerId = pcbnew.B_SilkS
+
+            # if layerId == pcbnew.F_SilkS:
+            #     ref.SetLayer(pcbnew.User_1)
             
-            if layerId == pcbnew.B_SilkS:
-                ref.SetLayer(pcbnew.User_2)
+            # if layerId == pcbnew.B_SilkS:
+            #     ref.SetLayer(pcbnew.User_2)
 
             textSize=designSettings.GetTextSize(designLayerId)
+
+            ref.SetLayer(refLayerId)
             ref.SetTextThickness(designSettings.GetTextThickness(designLayerId))
             ref.SetTextWidth(textSize.GetWidth())
             ref.SetTextHeight(textSize.GetHeight())
