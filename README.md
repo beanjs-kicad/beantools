@@ -18,18 +18,9 @@ git clone https://github.com/beanjs-kicad/beantools.git
 
 skip outer:2
 
-## length stats
-
-> Improve from https://github.com/MitjaNemec/Kicad_action_plugins
-
 ## track_swap
-
-
 
 ## align_ref
 
 - F.Silk->User.1
 - B.Silk->User.2
-
-
-
